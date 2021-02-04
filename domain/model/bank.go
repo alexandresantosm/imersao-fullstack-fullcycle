@@ -2,14 +2,19 @@ package model
 
 import (
 	"time"
-	uuid "github.com/satori/go.uuid"
+
 	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
 )
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 type Bank struct {
-	Base `valid:"required"`
-	Code string `json:"code" valid:"notnull"`
-	Name string `json:"name" valid:"notnull"`
+	Base     `valid:"required"`
+	Code     string     `json:"code" valid:"notnull"`
+	Name     string     `json:"name" valid:"notnull"`
 	Accounts []*Account `valid:"-"`
 }
 

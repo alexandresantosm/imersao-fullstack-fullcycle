@@ -1,9 +1,11 @@
 package model
 
 import (
+	"errors"
 	"time"
-	uuid "github.com/satori/go.uuid"
+
 	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
 )
 
 type PixKeyRepositoryInterface interface {
@@ -14,13 +16,17 @@ type PixKeyRepositoryInterface interface {
 	FindAccount(id string) (*Account, error)
 }
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 type PixKey struct {
-	Base `valid:"required"`
-	Kind string `json:"kind" valid:"notnull"`
-	Key string `json:"key" valid:"notnull"`
-	AccountID string `json:"account_id" valid:"notnull"`
-	Account *Account `valid:"-"`
-	Status string `json:"status" valid:"notnull"`
+	Base      `valid:"required"`
+	Kind      string   `json:"kind" valid:"notnull"`
+	Key       string   `json:"key" valid:"notnull"`
+	AccountID string   `json:"account_id" valid:"notnull"`
+	Account   *Account `valid:"-"`
+	Status    string   `json:"status" valid:"notnull"`
 }
 
 func (pixKey *PixKey) isValid() error {
@@ -41,12 +47,12 @@ func (pixKey *PixKey) isValid() error {
 	return nil
 }
 
-func NewAccount(kind string, key string, account *Account) (*PixKey, error) {
-	pixKey := PixKey {
-		Kind: kind,
-		Key: key,
+func NewPixKey(kind string, key string, account *Account) (*PixKey, error) {
+	pixKey := PixKey{
+		Kind:    kind,
+		Key:     key,
 		Account: account,
-		Status: "active",
+		Status:  "active",
 	}
 
 	pixKey.ID = uuid.NewV4().String()

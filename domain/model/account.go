@@ -2,16 +2,22 @@ package model
 
 import (
 	"time"
-	uuid "github.com/satori/go.uuid"
+
 	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
 )
 
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
+
 type Account struct {
-	Base `valid:"required"`
-	OwnerName string `json:"owner_name" valid:"notnull"`
-	Bank *Bank `valid:"-"`
-	Number string `json:"number" valid:"notnull"`
-	PixKeys []*PixKey `valid:"-"`
+	Base      `valid:"required"`
+	OwnerName string    `json:"owner_name" valid:"notnull"`
+	Bank      *Bank     `valid:"-"`
+	BankID    string    `gorm:"column:bank_id;type:uuid;not null" valid:"-"`
+	Number    string    `json:"number" valid:"notnull"`
+	PixKeys   []*PixKey `valid:"-"`
 }
 
 func (account *Account) isValid() error {
@@ -25,10 +31,11 @@ func (account *Account) isValid() error {
 }
 
 func NewAccount(ownerName string, bank *Bank, number string) (*Account, error) {
-	account := Account {
+	account := Account{
 		OwnerName: ownerName,
-		Bank: bank,
-		Number: number
+		Bank:      bank,
+		BankID:    bank.ID,
+		Number:    number,
 	}
 
 	account.ID = uuid.NewV4().String()
